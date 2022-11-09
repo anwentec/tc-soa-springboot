@@ -1,0 +1,75 @@
+// JDK
+def compatibilityVersion = 1.8
+sourceCompatibility = compatibilityVersion
+targetCompatibility = compatibilityVersion
+
+// META-INF
+version = "0.0.1.RELEASE"
+
+ext{
+	companyEngName = "AnWen"
+	companyChName = "安文"
+	compilePath = "build/classes"
+}
+
+// jar
+ext.sharedManifest = manifest{
+	attributes 'Built-company': companyEngName
+	attributes 'Implementation-Title': project.name
+	attributes 'Implementation-version': version
+	attributes 'Gradle-Version': gradle.gradleVersion
+	attributes 'Build-Jdk': compatibilityVersion
+	attributes 'Builtd-version': version + "Build" + new Date().format('yyyyMMddHHmmss')
+	attributes 'Build-Verdor': companyChName
+	attributes 'Created-Time': new Date().format('yyyyMMddHHmmss')
+}
+
+// 
+task compileDebugSources{
+}
+
+// 
+jar.enabled = false
+
+// 
+task copyJar(type: Copy) {
+	delete "build\\libs\\lib"
+	from configurations.compileClasspath
+	into "build\\libs\\lib"
+}
+
+// 
+task copyClassFile(type: Copy) {
+	delete "build\\libs\\classes"
+	from('src/main/java')
+	into "build\\libs\\classes"
+}
+
+//
+task copyConfigFile(type: Copy) {
+	delete "build\\libs\\resources"
+	from('src/main/resources')
+	into "build\\libs\\resources"
+}
+
+//
+bootJar {
+	baseName = companyEngName
+	appendix = project.name
+	archiveName = appendix +  "." + extension
+
+	// duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	
+	dependsOn copyJar
+	dependsOn copyClassFile
+	dependsOn copyConfigFile
+	
+	manifest {
+		from sharedManifest
+	}
+
+
+	from {
+		configurations.runtimeClasspath.files.collect { "libs/$it.name" }.join(' ')
+	}
+}

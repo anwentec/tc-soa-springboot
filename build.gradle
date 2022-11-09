@@ -1,0 +1,45 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
+}
+
+group 'cn.plmnext'
+version '1.0-SNAPSHOT'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+apply from: 'common.gradle'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web'){
+        exclude module: 'spring-boot-starter-logging'
+    }
+    implementation('com.alibaba.fastjson2:fastjson2:2.0.17')
+
+    // 日志配置
+    implementation 'log4j:log4j:1.2.13'
+    implementation("org.apache.logging.log4j:log4j-core:2.8.2")
+    implementation("org.apache.logging.log4j:log4j-api:2.8.2")
+    implementation("logkit:logkit:1.2")
+
+    // 项目本地依赖
+    implementation fileTree(dir:'libs',includes:['*jar'])
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    // 测试
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}
